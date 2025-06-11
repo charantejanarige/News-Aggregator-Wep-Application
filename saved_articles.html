@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saved Articles - News Aggregator</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        /* Reset and base styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary-color: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary-color: #10b981;
+            --accent-color: #f59e0b;
+            --dark-color: #1e293b;
+            --light-color: #f8fafc;
+            --gray-color: #94a3b8;
+            --success-color: #10b981;
+            --danger-color: #ef4444;
+            --warning-color: #f59e0b;
+            --info-color: #3b82f6;
+            --border-radius: 0.5rem;
+            --box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --transition: all 0.3s ease;
+            --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+        
+        body {
+            font-family: var(--font-sans);
+            line-height: 1.6;
+            color: var(--dark-color);
+            background-color: #f1f5f9;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 20px;
+            width: 100%;
+            flex: 1;
+        }
+        
+        h1, h2, h3 {
+            color: var(--dark-color);
+            margin-bottom: 1.25rem;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #eaeaea;
+            display: flex;
+            align-items: center;
+        }
+        
+        h1 i {
+            margin-right: 0.75rem;
+            color: var(--primary-color);
+        }
+        
+        p {
+            margin-bottom: 15px;
+            color: #475569;
+        }
+        
+        a {
+            color: var(--primary-color);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        
+        a:hover {
+            color: var(--primary-dark);
+        }
+        
+        /* Header */
+        .header {
+            background-color: var(--light-color);
+            padding: 1.5rem 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+        }
+        
+        .logo i {
+            margin-right: 0.5rem;
+            color: var(--primary-color);
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            color: var(--dark-color);
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .user-info i {
+            margin-right: 0.5rem;
+            color: var(--primary-color);
+        }
+        
+        /* Back button */
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            background-color: var(--light-color);
+            border: 1px solid var(--gray-color);
+            border-radius: var(--border-radius);
+            color: var(--dark-color);
+            font-weight: 600;
+            font-size: 0.875rem;
+            transition: var(--transition);
+            margin-bottom: 20px;
+        }
+        
+        .back-button:hover {
+            background-color: var(--gray-color);
+            color: white;
+        }
+        
+        .back-button i {
+            margin-right: 0.5rem;
+        }
+        
+        /* Category filter */
+        .category-filter {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: var(--box-shadow);
+        }
+        
+        .filter-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--dark-color);
+            display: flex;
+            align-items: center;
+        }
+        
+        .filter-title i {
+            margin-right: 0.5rem;
+            color: var(--primary-color);
+        }
+        
+        .filter-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .filter-option {
+            padding: 0.5rem 1rem;
+            background-color: #f1f5f9;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--dark-color);
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+        }
+        
+        .filter-option i {
+            margin-right: 0.5rem;
+            font-size: 0.75rem;
+        }
+        
+        .filter-option:hover {
+            background-color: #e2e8f0;
+            transform: translateY(-2px);
+        }
+        
+        .filter-option.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .filter-option.active:hover {
+            background-color: var(--primary-dark);
+        }
+        
+        /* Articles grid */
+        .articles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .article-card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--box-shadow);
+            transition: transform 0.3s ease;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .article-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        
+        .article-image-container {
+            width: 100%;
+            height: 180px;
+            overflow: hidden;
+            position: relative;
+            background-color: #f0f0f0;
+        }
+        
+        .article-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .article-content {
+            padding: 15px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .article-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--dark-color);
+        }
+        
+        .article-meta {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 0.8rem;
+            color: var(--gray-color);
+        }
+        
+        .article-source {
+            display: flex;
+            align-items: center;
+        }
+        
+        .article-source i {
+            margin-right: 0.25rem;
+        }
+        
+        .article-category {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .article-actions {
+            margin-top: auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .article-link {
+            color: var(--primary-color);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+        }
+        
+        .article-link i {
+            margin-left: 0.25rem;
+            transition: transform 0.2s ease;
+        }
+        
+        .article-link:hover i {
+            transform: translateX(3px);
+        }
+        
+        .remove-article-btn {
+            padding: 0.4rem 0.75rem;
+            background-color: var(--light-color);
+            border: 1px solid var(--danger-color);
+            border-radius: var(--border-radius);
+            color: var(--danger-color);
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+        }
+        
+        .remove-article-btn i {
+            margin-right: 0.25rem;
+        }
+        
+        .remove-article-btn:hover {
+            background-color: var(--danger-color);
+            color: white;
+        }
+        
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 40px 0;
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+        
+        .empty-state-icon {
+            font-size: 3rem;
+            color: var(--gray-color);
+            margin-bottom: 1rem;
+        }
+        
+        .empty-state-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--dark-color);
+        }
+        
+        .empty-state-text {
+            color: var(--gray-color);
+            margin-bottom: 1.5rem;
+        }
+        
+        .browse-button {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            transition: var(--transition);
+            text-decoration: none;
+        }
+        
+        .browse-button:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 10px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            color: white;
+        }
+        
+        .browse-button i {
+            margin-right: 0.5rem;
+        }
+        
+        /* Toast notification */
+        .toast-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        
+        .toast {
+            padding: 12px 20px;
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            animation: slideIn 0.3s ease, fadeOut 0.5s ease 2.5s forwards;
+            max-width: 300px;
+        }
+        
+        .toast.success {
+            border-left: 4px solid var(--success-color);
+        }
+        
+        .toast.error {
+            border-left: 4px solid var(--danger-color);
+        }
+        
+        .toast i {
+            margin-right: 10px;
+            font-size: 1.25rem;
+        }
+        
+        .toast.success i {
+            color: var(--success-color);
+        }
+        
+        .toast.error i {
+            color: var(--danger-color);
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; visibility: hidden; }
+        }
+        
+        /* Footer */
+        .footer {
+            margin-top: auto;
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            padding: 20px 0;
+            border-top: 1px solid #eaeaea;
+            background-color: white;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .articles-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+            
+            .filter-options {
+                flex-wrap: nowrap;
+                overflow-x: auto;
+                padding-bottom: 10px;
+                -webkit-overflow-scrolling: touch;
+            }
+            
+            .filter-option {
+                white-space: nowrap;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .articles-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .article-actions {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+            
+            .remove-article-btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <a href="/" class="logo">
+                    <i class="fas fa-newspaper"></i>
+                    News Aggregator
+                </a>
+                <div class="user-info">
+                    <i class="fas fa-user-circle"></i>
+                    Welcome, {{ session.get('name', 'User') }}
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <a href="/" class="back-button">
+            <i class="fas fa-arrow-left"></i> Back to Home
+        </a>
+        
+        <h1><i class="fas fa-bookmark"></i> Saved Articles</h1>
+        
+        {% if saved_articles %}
+            <!-- Category filter -->
+            <div class="category-filter">
+                <div class="filter-title">
+                    <i class="fas fa-filter"></i> Filter by Category
+                </div>
+                <div class="filter-options">
+                    <div class="filter-option active" data-category="all">
+                        <i class="fas fa-layer-group"></i> All Categories
+                    </div>
+                    {% for category in categories %}
+                        <div class="filter-option" data-category="{{ category }}">
+                            <i class="fas 
+                            {% if category == 'Business' %}fa-briefcase
+                            {% elif category == 'Technology' %}fa-microchip
+                            {% elif category == 'Entertainment' %}fa-film
+                            {% elif category == 'Sports' %}fa-futbol
+                            {% elif category == 'Health' %}fa-heartbeat
+                            {% elif category == 'Science' %}fa-flask
+                            {% elif category == 'Politics' %}fa-landmark
+                            {% elif category == 'World' %}fa-globe
+                            {% elif category == 'Environment' %}fa-leaf
+                            {% elif category == 'Education' %}fa-graduation-cap
+                            {% elif category == 'Travel' %}fa-plane
+                            {% elif category == 'Food' %}fa-utensils
+                            {% elif category == 'Fashion' %}fa-tshirt
+                            {% elif category == 'Lifestyle' %}fa-coffee
+                            {% elif category == 'Opinion' %}fa-comment
+                            {% elif category == 'Weather' %}fa-cloud-sun
+                            {% elif category == 'Real Estate' %}fa-home
+                            {% elif category == 'Automotive' %}fa-car
+                            {% else %}fa-newspaper
+                            {% endif %}"></i> {{ category }}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <!-- Articles grid -->
+            <div class="articles-grid">
+                {% for article in saved_articles %}
+                    <div class="article-card" data-category="{{ article.category }}">
+                        {% if article.has_image and article.image_url %}
+                            <div class="article-image-container">
+                                <img src="{{ article.image_url }}" alt="{{ article.title }}" class="article-image" 
+                                     onerror="this.onerror=null; this.parentNode.style.display='none';">
+                            </div>
+                        {% endif %}
+                        <div class="article-content">
+                            <h3 class="article-title">{{ article.title }}</h3>
+                            <div class="article-meta">
+                                <div class="article-source">
+                                    <i class="fas fa-newspaper"></i> {{ article.source }}
+                                </div>
+                                <div class="article-date">
+                                    {{ article.saved_at.split(' ')[0] }}
+                                </div>
+                            </div>
+                            <span class="article-category">{{ article.category }}</span>
+                            <div class="article-actions">
+                                <a href="{{ article.url }}" target="_blank" class="article-link">
+                                    Read article <i class="fas fa-external-link-alt"></i>
+                                </a>
+                                <button class="remove-article-btn" data-url="{{ article.url }}">
+                                    <i class="fas fa-trash-alt"></i> Remove
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <!-- Empty state -->
+            <div class="empty-state">
+                <div class="empty-state-icon">
+                    <i class="fas fa-bookmark"></i>
+                </div>
+                <h2 class="empty-state-title">No saved articles yet</h2>
+                <p class="empty-state-text">Start saving articles from news sources to read them later.</p>
+                <a href="/" class="browse-button">
+                    <i class="fas fa-newspaper"></i> Browse News Sources
+                </a>
+            </div>
+        {% endif %}
+        
+        <div id="toast-container" class="toast-container">
+            <!-- Toast notifications will be added here -->
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>News Aggregator &copy; 2025</p>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const filterOptions = document.querySelectorAll('.filter-option');
+            const articleCards = document.querySelectorAll('.article-card');
+            const removeButtons = document.querySelectorAll('.remove-article-btn');
+            const toastContainer = document.getElementById('toast-container');
+            
+            // Function to show toast notification
+            function showToast(message, type = 'success') {
+                const toast = document.createElement('div');
+                toast.className = `toast ${type}`;
+                toast.innerHTML = `
+                    <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
+                    <span>${message}</span>
+                `;
+                
+                toastContainer.appendChild(toast);
+                
+                // Remove toast after animation completes
+                setTimeout(() => {
+                    toast.remove();
+                }, 3000);
+            }
+            
+            // Filter options click handler
+            filterOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    // Update active class
+                    filterOptions.forEach(opt => opt.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Get selected category
+                    const selectedCategory = this.dataset.category;
+                    
+                    // Filter articles
+                    articleCards.forEach(card => {
+                        if (selectedCategory === 'all' || card.dataset.category === selectedCategory) {
+                            card.style.display = 'flex';
+                        } else {
+                            card.style.display = 'none';
+                        }
+                    });
+                });
+            });
+            
+            // Remove button click handler
+            removeButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const articleUrl = this.dataset.url;
+                    const articleCard = this.closest('.article-card');
+                    
+                    // Send request to remove article
+                    fetch('/remove_saved_article', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ url: articleUrl })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Remove article card with animation
+                            articleCard.style.opacity = '0';
+                            articleCard.style.transform = 'scale(0.8)';
+                            articleCard.style.transition = 'all 0.3s ease';
+                            
+                            setTimeout(() => {
+                                articleCard.remove();
+                                
+                                // Check if there are no more articles
+                                const remainingCards = document.querySelectorAll('.article-card');
+                                if (remainingCards.length === 0) {
+                                    // Reload the page to show empty state
+                                    window.location.reload();
+                                }
+                            }, 300);
+                            
+                            // Show success toast
+                            showToast('Article removed successfully');
+                        } else {
+                            showToast(data.message || 'Failed to remove article', 'error');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error removing article:', error);
+                        showToast('Error removing article', 'error');
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>

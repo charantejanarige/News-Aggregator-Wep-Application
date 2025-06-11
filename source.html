@@ -1,0 +1,1191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>News Source - News Aggregator</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        /* Reset and base styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary-color: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary-color: #10b981;
+            --accent-color: #f59e0b;
+            --dark-color: #1e293b;
+            --light-color: #f8fafc;
+            --gray-color: #94a3b8;
+            --success-color: #10b981;
+            --danger-color: #ef4444;
+            --warning-color: #f59e0b;
+            --info-color: #3b82f6;
+            --border-radius: 0.5rem;
+            --box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --transition: all 0.3s ease;
+            --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+        
+        body {
+            font-family: var(--font-sans);
+            line-height: 1.6;
+            color: var(--dark-color);
+            background-color: #f1f5f9;
+            padding: 0;
+            scroll-behavior: smooth;
+        }
+        
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        h1, h2, h3 {
+            color: var(--dark-color);
+            margin-bottom: 1.25rem;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #eaeaea;
+            display: flex;
+            align-items: center;
+        }
+        
+        h1 i {
+            margin-right: 0.75rem;
+            color: var(--primary-color);
+        }
+        
+        h2 {
+            font-size: 1.875rem;
+            margin-top: 30px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eaeaea;
+            position: relative;
+        }
+        
+        h2::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100px;
+            height: 3px;
+            background: var(--primary-color);
+            border-radius: 2px;
+        }
+        
+        h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+        
+        p {
+            margin-bottom: 15px;
+            color: #475569;
+        }
+        
+        a {
+            color: var(--primary-color);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        
+        a:hover {
+            color: var(--primary-dark);
+        }
+        
+        /* Header */
+        .header {
+            background-color: var(--light-color);
+            padding: 1.5rem 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+        }
+        
+        .logo i {
+            margin-right: 0.5rem;
+            color: var(--primary-color);
+        }
+        
+        .user-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            color: var(--dark-color);
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .user-info i {
+            margin-right: 0.5rem;
+            color: var(--primary-color);
+        }
+        
+        .saved-articles-btn {
+            display: flex;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            background-color: var(--light-color);
+            border: 1px solid var(--primary-color);
+            border-radius: var(--border-radius);
+            color: var(--primary-color);
+            font-weight: 600;
+            font-size: 0.875rem;
+            transition: var(--transition);
+            text-decoration: none;
+        }
+        
+        .saved-articles-btn:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .saved-articles-btn i {
+            margin-right: 0.5rem;
+        }
+        
+        /* Back button */
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            background-color: var(--light-color);
+            border: 1px solid var(--gray-color);
+            border-radius: var(--border-radius);
+            color: var(--dark-color);
+            font-weight: 600;
+            font-size: 0.875rem;
+            transition: var(--transition);
+            margin-bottom: 20px;
+        }
+        
+        .back-button:hover {
+            background-color: var(--gray-color);
+            color: white;
+        }
+        
+        .back-button i {
+            margin-right: 0.5rem;
+        }
+        
+        /* Source info */
+        .source-info {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: var(--box-shadow);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .source-details h2 {
+            margin-top: 0;
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+        
+        .source-details h2::after {
+            display: none;
+        }
+        
+        .source-url {
+            color: var(--gray-color);
+            font-size: 0.9rem;
+            margin-bottom: 0;
+        }
+        
+        .scrape-button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+        }
+        
+        .scrape-button:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 10px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        
+        .scrape-button i {
+            margin-right: 0.5rem;
+        }
+        
+        /* Categories navigation */
+        .categories-nav {
+            position: sticky;
+            top: 90px;
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: var(--box-shadow);
+            z-index: 90;
+        }
+        
+        .categories-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--dark-color);
+            display: flex;
+            align-items: center;
+        }
+        
+        .categories-title i {
+            margin-right: 0.5rem;
+            color: var(--primary-color);
+        }
+        
+        .categories-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .category-pill {
+            padding: 0.5rem 1rem;
+            background-color: #f1f5f9;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--dark-color);
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+        }
+        
+        .category-pill i {
+            margin-right: 0.5rem;
+            font-size: 0.75rem;
+        }
+        
+        .category-pill:hover {
+            background-color: #e2e8f0;
+            transform: translateY(-2px);
+        }
+        
+        .category-pill.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .category-pill.active:hover {
+            background-color: var(--primary-dark);
+        }
+        
+        /* Loading indicator */
+        .loading {
+            text-align: center;
+            padding: 40px 0;
+            display: none;
+        }
+        
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top: 4px solid var(--primary-color);
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Results section */
+        .results {
+            display: none;
+            margin-top: 30px;
+        }
+        
+        .results-summary {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: var(--box-shadow);
+        }
+        
+        .summary-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--dark-color);
+        }
+        
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+        }
+        
+        .summary-item {
+            background-color: #f8fafc;
+            border-radius: var(--border-radius);
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .summary-item:hover {
+            background-color: #e2e8f0;
+            transform: translateY(-2px);
+        }
+        
+        .summary-item.active {
+            background-color: var(--primary-color);
+        }
+        
+        .summary-item.active .summary-item-count,
+        .summary-item.active .summary-item-label {
+            color: white;
+        }
+        
+        .summary-item-count {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+        }
+        
+        .summary-item-label {
+            font-size: 0.9rem;
+            color: var(--gray-color);
+        }
+        
+        /* Category sections */
+        .category-section {
+            margin-bottom: 40px;
+            scroll-margin-top: 150px;
+        }
+        
+        .category-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--dark-color);
+            display: flex;
+            align-items: center;
+        }
+        
+        .category-title i {
+            margin-right: 0.75rem;
+            color: var(--primary-color);
+        }
+        
+        .category-count {
+            margin-left: 10px;
+            font-size: 1rem;
+            color: var(--gray-color);
+        }
+        
+        .articles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .article-card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--box-shadow);
+            transition: transform 0.3s ease;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .article-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        
+        .article-image-container {
+            width: 100%;
+            height: 180px;
+            overflow: hidden;
+            position: relative;
+            background-color: #f0f0f0;
+        }
+        
+        .article-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .article-content {
+            padding: 15px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .article-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--dark-color);
+        }
+        
+        .article-confidence {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .article-actions {
+            margin-top: auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .article-link {
+            color: var(--primary-color);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+        }
+        
+        .article-link i {
+            margin-left: 0.25rem;
+            transition: transform 0.2s ease;
+        }
+        
+        .article-link:hover i {
+            transform: translateX(3px);
+        }
+        
+        .save-article-btn {
+            padding: 0.4rem 0.75rem;
+            background-color: var(--light-color);
+            border: 1px solid var(--primary-color);
+            border-radius: var(--border-radius);
+            color: var(--primary-color);
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+        }
+        
+        .save-article-btn i {
+            margin-right: 0.25rem;
+        }
+        
+        .save-article-btn:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .save-article-btn.saved {
+            background-color: var(--success-color);
+            border-color: var(--success-color);
+            color: white;
+        }
+        
+        .save-article-btn.saved:hover {
+            background-color: var(--danger-color);
+            border-color: var(--danger-color);
+        }
+        
+        /* Toast notification */
+        .toast-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        
+        .toast {
+            padding: 12px 20px;
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            animation: slideIn 0.3s ease, fadeOut 0.5s ease 2.5s forwards;
+            max-width: 300px;
+        }
+        
+        .toast.success {
+            border-left: 4px solid var(--success-color);
+        }
+        
+        .toast.error {
+            border-left: 4px solid var(--danger-color);
+        }
+        
+        .toast i {
+            margin-right: 10px;
+            font-size: 1.25rem;
+        }
+        
+        .toast.success i {
+            color: var(--success-color);
+        }
+        
+        .toast.error i {
+            color: var(--danger-color);
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; visibility: hidden; }
+        }
+        
+        /* Error message */
+        .error-message {
+            background-color: #fee2e2;
+            color: var(--danger-color);
+            padding: 15px;
+            border-radius: var(--border-radius);
+            margin-bottom: 20px;
+            display: none;
+            border-left: 3px solid var(--danger-color);
+        }
+        
+        /* Footer */
+        .footer {
+            margin-top: 50px;
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            padding: 20px 0;
+            border-top: 1px solid #eaeaea;
+            background-color: white;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .source-info {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .scrape-button {
+                margin-top: 15px;
+                align-self: flex-start;
+            }
+            
+            .articles-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+            
+            .summary-grid {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            }
+            
+            .categories-list {
+                flex-wrap: nowrap;
+                overflow-x: auto;
+                padding-bottom: 10px;
+                -webkit-overflow-scrolling: touch;
+            }
+            
+            .category-pill {
+                white-space: nowrap;
+            }
+            
+            .user-actions {
+                flex-direction: column;
+                align-items: flex-end;
+                gap: 0.5rem;
+            }
+            
+            .header-content {
+                flex-wrap: wrap;
+                gap: 0.5rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .articles-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .summary-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .article-actions {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+            
+            .save-article-btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <a href="/" class="logo">
+                    <i class="fas fa-newspaper"></i>
+                    News Aggregator
+                </a>
+                <div class="user-actions">
+                    <div class="user-info">
+                        <i class="fas fa-user-circle"></i>
+                        Welcome, {{ session.get('name', 'User') }}
+                    </div>
+                    <a href="/saved_articles" class="saved-articles-btn">
+                        <i class="fas fa-bookmark"></i> Saved Articles
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <a href="/" class="back-button">
+            <i class="fas fa-arrow-left"></i> Back to Home
+        </a>
+        
+        <div class="source-info">
+            <div class="source-details">
+                <h2>{{ source.name }}</h2>
+                <p class="source-url">{{ source.url }}</p>
+            </div>
+            <button id="scrape-button" class="scrape-button">
+                <i class="fas fa-sync-alt"></i> Scrape Articles
+            </button>
+        </div>
+        
+        <div id="error-message" class="error-message"></div>
+        
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <p>Scraping and classifying articles...</p>
+        </div>
+        
+        <!-- Categories navigation - will be populated after scraping -->
+        <div id="categories-nav" class="categories-nav" style="display: none;">
+            <div class="categories-title">
+                <i class="fas fa-filter"></i> Filter by Category
+            </div>
+            <div id="categories-list" class="categories-list">
+                <!-- Category pills will be added here -->
+            </div>
+        </div>
+        
+        <div id="results" class="results">
+            <div class="results-summary">
+                <h3 class="summary-title">Classification Summary</h3>
+                <div id="summary-grid" class="summary-grid">
+                    <!-- Summary items will be added here -->
+                </div>
+            </div>
+            
+            <div id="category-sections">
+                <!-- Category sections will be added here -->
+            </div>
+        </div>
+        
+        <div id="toast-container" class="toast-container">
+            <!-- Toast notifications will be added here -->
+        </div>
+        
+        <div class="footer">
+            <p>News Aggregator &copy; 2025</p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const scrapeButton = document.getElementById('scrape-button');
+            const loading = document.getElementById('loading');
+            const results = document.getElementById('results');
+            const errorMessage = document.getElementById('error-message');
+            const summaryGrid = document.getElementById('summary-grid');
+            const categorySections = document.getElementById('category-sections');
+            const categoriesNav = document.getElementById('categories-nav');
+            const categoriesList = document.getElementById('categories-list');
+            const toastContainer = document.getElementById('toast-container');
+            
+            // Category icons mapping
+            const categoryIcons = {
+                'Business': 'fa-briefcase',
+                'Technology': 'fa-microchip',
+                'Entertainment': 'fa-film',
+                'Sports': 'fa-futbol',
+                'Health': 'fa-heartbeat',
+                'Science': 'fa-flask',
+                'Politics': 'fa-landmark',
+                'World': 'fa-globe',
+                'Environment': 'fa-leaf',
+                'Education': 'fa-graduation-cap',
+                'Travel': 'fa-plane',
+                'Food': 'fa-utensils',
+                'Fashion': 'fa-tshirt',
+                'Lifestyle': 'fa-coffee',
+                'Opinion': 'fa-comment',
+                'Weather': 'fa-cloud-sun',
+                'Real Estate': 'fa-home',
+                'Automotive': 'fa-car'
+            };
+            
+            // Default icon for categories not in the mapping
+            const defaultIcon = 'fa-newspaper';
+            
+            // Track active category
+            let activeCategory = null;
+            
+            // Track saved articles
+            let savedArticles = [];
+            
+            // Fetch saved articles on page load
+            fetchSavedArticles();
+            
+            // Function to fetch saved articles
+            function fetchSavedArticles() {
+                fetch('/get_saved_articles')
+                    .then(response => response.json())
+                    .then(data => {
+                        savedArticles = data.map(article => article.url);
+                        
+                        // Update save buttons if results are already displayed
+                        if (results.style.display === 'block') {
+                            updateSaveButtons();
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching saved articles:', error);
+                    });
+            }
+            
+            // Function to update save buttons based on saved articles
+            function updateSaveButtons() {
+                const saveButtons = document.querySelectorAll('.save-article-btn');
+                saveButtons.forEach(button => {
+                    const articleUrl = button.dataset.url;
+                    if (savedArticles.includes(articleUrl)) {
+                        button.classList.add('saved');
+                        button.innerHTML = '<i class="fas fa-bookmark"></i> Saved';
+                    } else {
+                        button.classList.remove('saved');
+                        button.innerHTML = '<i class="far fa-bookmark"></i> Save';
+                    }
+                });
+            }
+            
+            // Function to show toast notification
+            function showToast(message, type = 'success') {
+                const toast = document.createElement('div');
+                toast.className = `toast ${type}`;
+                toast.innerHTML = `
+                    <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
+                    <span>${message}</span>
+                `;
+                
+                toastContainer.appendChild(toast);
+                
+                // Remove toast after animation completes
+                setTimeout(() => {
+                    toast.remove();
+                }, 3000);
+            }
+            
+            // Function to save article
+            function saveArticle(articleData) {
+                fetch('/save_article', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(articleData)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Add to saved articles
+                        if (!savedArticles.includes(articleData.url)) {
+                            savedArticles.push(articleData.url);
+                        }
+                        
+                        // Update save buttons
+                        updateSaveButtons();
+                        
+                        // Show success toast
+                        showToast('Article saved successfully');
+                    } else {
+                        showToast(data.message || 'Failed to save article', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error saving article:', error);
+                    showToast('Error saving article', 'error');
+                });
+            }
+            
+            // Function to remove saved article
+            function removeSavedArticle(articleUrl) {
+                fetch('/remove_saved_article', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ url: articleUrl })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Remove from saved articles
+                        savedArticles = savedArticles.filter(url => url !== articleUrl);
+                        
+                        // Update save buttons
+                        updateSaveButtons();
+                        
+                        // Show success toast
+                        showToast('Article removed from saved');
+                    } else {
+                        showToast(data.message || 'Failed to remove article', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error removing article:', error);
+                    showToast('Error removing article', 'error');
+                });
+            }
+            
+            // Scrape button click handler
+            scrapeButton.addEventListener('click', function() {
+                // Show loading, hide results and error
+                loading.style.display = 'block';
+                results.style.display = 'none';
+                errorMessage.style.display = 'none';
+                categoriesNav.style.display = 'none';
+                
+                // Reset active category
+                activeCategory = null;
+                
+                // Fetch articles from the source
+                fetch('/scrape/{{ source_id }}')
+                    .then(response => {
+                        if (!response.ok) {
+                            return response.json().then(data => {
+                                throw new Error(data.error || 'Failed to scrape articles');
+                            });
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        // Process and display results
+                        displayResults(data);
+                        
+                        // Show categories navigation
+                        categoriesNav.style.display = 'block';
+                        
+                        // Populate categories navigation
+                        populateCategoriesNav(data);
+                    })
+                    .catch(error => {
+                        // Show error message
+                        errorMessage.textContent = error.message;
+                        errorMessage.style.display = 'block';
+                    })
+                    .finally(() => {
+                        // Hide loading
+                        loading.style.display = 'none';
+                    });
+            });
+            
+            // Function to populate categories navigation
+            function populateCategoriesNav(data) {
+                // Clear existing categories
+                categoriesList.innerHTML = '';
+                
+                // Add "All Categories" option
+                const allCategoriesPill = document.createElement('div');
+                allCategoriesPill.className = 'category-pill active';
+                allCategoriesPill.innerHTML = `<i class="fas fa-layer-group"></i> All Categories`;
+                allCategoriesPill.addEventListener('click', function() {
+                    setActiveCategory(null);
+                });
+                categoriesList.appendChild(allCategoriesPill);
+                
+                // Add category pills for each category with articles
+                const summary = data.summary;
+                for (const category in summary) {
+                    const count = summary[category];
+                    
+                    // Skip categories with no articles
+                    if (count === 0) continue;
+                    
+                    // Get icon for category
+                    const iconClass = categoryIcons[category] || defaultIcon;
+                    
+                    // Create category pill
+                    const categoryPill = document.createElement('div');
+                    categoryPill.className = 'category-pill';
+                    categoryPill.dataset.category = category;
+                    categoryPill.innerHTML = `<i class="fas ${iconClass}"></i> ${category} (${count})`;
+                    
+                    // Add click event
+                    categoryPill.addEventListener('click', function() {
+                        setActiveCategory(category);
+                    });
+                    
+                    categoriesList.appendChild(categoryPill);
+                }
+            }
+            
+            // Function to set active category
+            function setActiveCategory(category) {
+                // Update active category
+                activeCategory = category;
+                
+                // Update category pills
+                const categoryPills = document.querySelectorAll('.category-pill');
+                categoryPills.forEach(pill => {
+                    if ((category === null && pill.textContent.includes('All Categories')) || 
+                        pill.dataset.category === category) {
+                        pill.classList.add('active');
+                    } else {
+                        pill.classList.remove('active');
+                    }
+                });
+                
+                // Update summary items
+                const summaryItems = document.querySelectorAll('.summary-item');
+                summaryItems.forEach(item => {
+                    if (category === null || item.dataset.category === category) {
+                        item.classList.add('active');
+                    } else {
+                        item.classList.remove('active');
+                    }
+                });
+                
+                // Show/hide category sections
+                const sections = document.querySelectorAll('.category-section');
+                sections.forEach(section => {
+                    if (category === null || section.dataset.category === category) {
+                        section.style.display = 'block';
+                    } else {
+                        section.style.display = 'none';
+                    }
+                });
+                
+                // If a specific category is selected, scroll to it
+                if (category !== null) {
+                    const targetSection = document.querySelector(`.category-section[data-category="${category}"]`);
+                    if (targetSection) {
+                        // Scroll to the category section with a small delay to ensure UI updates first
+                        setTimeout(() => {
+                            targetSection.scrollIntoView({ behavior: 'smooth' });
+                        }, 100);
+                    }
+                } else {
+                    // If "All Categories" is selected, scroll to the top of the results
+                    window.scrollTo({ top: results.offsetTop - 100, behavior: 'smooth' });
+                }
+            }
+            
+            // Function to handle save button click
+            function handleSaveButtonClick(button, article) {
+                const articleUrl = button.dataset.url;
+                
+                if (savedArticles.includes(articleUrl)) {
+                    // Article is already saved, remove it
+                    removeSavedArticle(articleUrl);
+                } else {
+                    // Article is not saved, save it
+                    saveArticle(article);
+                }
+            }
+            
+            // Function to display results
+            function displayResults(data) {
+                // Clear previous results
+                summaryGrid.innerHTML = '';
+                categorySections.innerHTML = '';
+                
+                // Display summary
+                const summary = data.summary;
+                for (const category in summary) {
+                    const count = summary[category];
+                    
+                    // Skip categories with no articles
+                    if (count === 0) continue;
+                    
+                    const summaryItem = document.createElement('div');
+                    summaryItem.className = 'summary-item';
+                    summaryItem.dataset.category = category;
+                    summaryItem.innerHTML = `
+                        <div class="summary-item-count">${count}</div>
+                        <div class="summary-item-label">${category}</div>
+                    `;
+                    
+                    // Add click event to filter by category
+                    summaryItem.addEventListener('click', function() {
+                        setActiveCategory(category);
+                    });
+                    
+                    summaryGrid.appendChild(summaryItem);
+                }
+                
+                // Display category sections
+                const articles = data.articles;
+                for (const category in articles) {
+                    const categoryArticles = articles[category];
+                    
+                    // Skip categories with no articles
+                    if (categoryArticles.length === 0) continue;
+                    
+                    // Get icon for category
+                    const iconClass = categoryIcons[category] || defaultIcon;
+                    
+                    // Create category section
+                    const categorySection = document.createElement('div');
+                    categorySection.className = 'category-section';
+                    categorySection.dataset.category = category;
+                    categorySection.id = `category-${category.toLowerCase().replace(/\s+/g, '-')}`;
+                    categorySection.innerHTML = `
+                        <h2 class="category-title">
+                            <i class="fas ${iconClass}"></i> ${category}
+                            <span class="category-count">(${categoryArticles.length})</span>
+                        </h2>
+                        <div class="articles-grid" id="articles-${category.toLowerCase().replace(/\s+/g, '-')}"></div>
+                    `;
+                    categorySections.appendChild(categorySection);
+                    
+                    // Get the articles grid for this category
+                    const articlesGrid = categorySection.querySelector('.articles-grid');
+                    
+                    // Add articles to the grid
+                    categoryArticles.forEach(article => {
+                        const articleCard = document.createElement('div');
+                        articleCard.className = 'article-card';
+                        
+                        // Format confidence as percentage
+                        const confidencePercent = Math.round(article.confidence * 100);
+                        
+                        // Check if article has image
+                        const hasImage = article.hasImage && (article.image_url || article.urlToImage);
+                        const imageUrl = article.image_url || article.urlToImage;
+                        
+                        // Prepare article URL
+                        const articleUrl = article.link || article.url;
+                        
+                        // Create article card HTML
+                        articleCard.innerHTML = `
+                            ${hasImage ? `
+                            <div class="article-image-container">
+                                <img src="${imageUrl}" alt="${article.title}" class="article-image" 
+                                     onerror="this.onerror=null; this.parentNode.style.display='none';">
+                            </div>
+                            ` : ''}
+                            <div class="article-content">
+                                <h3 class="article-title">${article.title}</h3>
+                                <span class="article-confidence">${confidencePercent}% confidence</span>
+                                <div class="article-actions">
+                                    <a href="${articleUrl}" target="_blank" class="article-link">
+                                        Read article <i class="fas fa-external-link-alt"></i>
+                                    </a>
+                                    <button class="save-article-btn" data-url="${articleUrl}">
+                                        <i class="far fa-bookmark"></i> Save
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                        
+                        articlesGrid.appendChild(articleCard);
+                        
+                        // Get the save button
+                        const saveButton = articleCard.querySelector('.save-article-btn');
+                        
+                        // Add click event to save button
+                        saveButton.addEventListener('click', function() {
+                            // Prepare article data for saving
+                            const articleData = {
+                                title: article.title,
+                                url: articleUrl,
+                                image_url: imageUrl,
+                                source: article.source || '{{ source.name }}',
+                                category: category,
+                                has_image: hasImage
+                            };
+                            
+                            handleSaveButtonClick(saveButton, articleData);
+                        });
+                    });
+                }
+                
+                // Show results
+                results.style.display = 'block';
+                
+                // Update save buttons based on saved articles
+                updateSaveButtons();
+            }
+        });
+    </script>
+</body>
+</html>
